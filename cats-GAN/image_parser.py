@@ -7,6 +7,7 @@ import pickle
 class ImageParser:
   def __init__(self, dir='cats/*.jpg'):
     self.images = self.__load_image_directory__()
+    self.__write_image_config__()
 
   def __load_image_directory__(self, dirStr='cats/*.jpg'):
     images = []
@@ -32,8 +33,7 @@ class ImageParser:
   def create_batches(self):
     return tf.data.Dataset.from_tensor_slices(self.images).shuffle(self.BUFFER_SIZE).batch(config.BATCH_SIZE)
 
-image_parser = ImageParser()
-print(type(image_parser.create_batches()))
+#image_parser = ImageParser()
 
 '''train_ds = tf.keras.utils.image_dataset_from_directory(
                   'cats',
