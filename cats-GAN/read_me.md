@@ -1,0 +1,1 @@
+Cat faces data set is available [here](https://www.kaggle.com/datasets/spandan2/cats-faces-64x64-for-generative-models) on Kaggle.
