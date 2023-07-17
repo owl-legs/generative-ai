@@ -1,10 +1,13 @@
 import tensorflow as tf
 from tensorflow.keras import layers
 
+cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
 class Generator:
 
     def __init__(self):
         self.generator = self.__make_generator__()
+        self.optimizer = tf.keras.optimizers.Adam(1e-4)
     def __make_generator__(self):
 
         model = tf.keras.Sequential()
@@ -27,5 +30,5 @@ class Generator:
 
         return model
 
-    def __generator_loss__(self):
-        return None
+    def generator_loss(fake_output):
+        return cross_entropy(tf.ones_like(fake_output), fake_output)

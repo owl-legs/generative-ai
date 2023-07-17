@@ -1,9 +1,13 @@
 import tensorflow as tf
 from tensorflow.keras import layers
 
+cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+
 class Discriminator:
     def __init__(self):
         self.discriminator = self.__make_discriminator__()
+        self.optimizer = tf.keras.optimizers.Adam(1e-4)
 
     def __make_discriminator__(self):
 
@@ -21,5 +25,7 @@ class Discriminator:
 
         return model
 
-    def __discriminator_loss__(self):
-        return None
+    def discriminator_loss(real_output, fake_output):
+        real_loss = cross_entropy(tf.ones_like(real_output), real_output)
+        fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
+        return real_loss + fake_loss
