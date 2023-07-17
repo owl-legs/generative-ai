@@ -1,9 +1,15 @@
+import os
+import time
+import config
+import matplotlib.pyplot as plt
+import tensorflow as tf
+
 from image_parser import ImageParser
 from discriminator import Discriminator
 from generator import Generator
-import tensorflow as tf
-import time
-import config
+
+from IPython import display
+
 
 BATCH_SIZE = config.BATCH_SIZE
 
@@ -24,6 +30,19 @@ def generator_loss(fake_output):
 
 generator_optimizer = tf.keras.optimizers.Adam(1e-4)
 discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+
+checkpoint_directory = './checkpoint_logs'
+checkpoint_prefix = os.path.join(checkpoint_directory, "checkpoint")
+checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
+                                 discriminator_optimizer=discriminator_optimizer,
+                                 generator=gen,
+                                 discriminator=disc)
+
+EPOCHS = 50
+noise_dimmension = 100
+number_of_examples_to_generate = 16
+
+seed = tf.random.normal([number_of_examples_to_generate, noise_dimmension])
 
 @tf.function
 def train_step(images):
@@ -53,7 +72,7 @@ def train(dataset, epochs):
             train_step(image_batch)
 
         display.clear_output(wait=True)
-        generate_and_save_images(generator, epoch + 1, seed)
+        generate_and_save_images(gen, epoch + 1, seed)
 
         if (epoch + 1) % 15 == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
@@ -61,7 +80,7 @@ def train(dataset, epochs):
         print(f'''time for epoch {epoch + 1} is {time.time() - start}''')
 
     display.clear_output(wait=True)
-    generate_and_save_images(generator, epoch + 1, seed)
+    generate_and_save_images(gen, epoch + 1, seed)
 
 
 def generate_and_save_images(model, epoch, test_input):
