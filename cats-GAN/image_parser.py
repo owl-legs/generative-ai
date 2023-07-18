@@ -15,17 +15,19 @@ class ImageParser:
       print(f'''loading {filename}''')
       img = tf.io.read_file(filename)
       img = tf.io.decode_image(img, channels=3)
-      img = tf.image.rgb_to_grayscale(img)
+      img = tf.image.rgb_to_grayscale(img) #r(ih, iw, 3) => r(ih, iw, 1)
+      #img = (img - 127.5)/127.5
       print(f'''{filename} dimmenions: {img.shape}''')
       images.append(img)
-    images = np.array(images)
-    return images
+    images = np.array(images).astype('float32')
+    images = (images - 127.5)/127.5
+    return images[:config.BUFFER_SIZE]
 
   def __write_image_config__(self):
-    self.BUFFER_SIZE = ((self.images.shape[0]) // config.BATCH_SIZE) * config.BATCH_SIZE
+    self.BUFFER_SIZE = config.BUFFER_SIZE
     self.IMG_HEIGHT, self.IMG_WIDTH = self.images.shape[1], self.images.shape[2]
     self.CHANNELS = self.images.shape[3]
-    pickle.dump({'BUFFER_SIZE':self.BUFFER_SIZE,
+    pickle.dump({'BUFFER_SIZE':config.BUFFER_SIZE,
                  'IMG_HEIGHT':self.IMG_HEIGHT,
                  'IMG_WIDTH':self.IMG_WIDTH,
                  'CHANNELS':self.CHANNELS}, open('image_config', 'wb'), True)
@@ -33,7 +35,7 @@ class ImageParser:
   def create_batches(self):
     return tf.data.Dataset.from_tensor_slices(self.images).shuffle(self.BUFFER_SIZE).batch(config.BATCH_SIZE)
 
-#image_parser = ImageParser()
+image_parser = ImageParser()
 
 '''train_ds = tf.keras.utils.image_dataset_from_directory(
                   'cats',

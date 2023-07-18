@@ -10,7 +10,6 @@ from generator import Generator
 
 from IPython import display
 
-
 BATCH_SIZE = config.BATCH_SIZE
 
 parser = ImageParser()
@@ -46,7 +45,7 @@ seed = tf.random.normal([number_of_examples_to_generate, noise_dimmension])
 
 @tf.function
 def train_step(images):
-    noise = tf.random.normal([BATCH_SIZE, noise_dimmension])
+    noise = tf.random.normal([64, noise_dimmension])
 
     with tf.GradientTape() as generator_tape, tf.GradientTape() as discriminator_tape:
 
@@ -55,11 +54,11 @@ def train_step(images):
         real_output = disc(images, training=True)
         fake_output = disc(generated_images, training=True)
 
-        gen_loss = gen.generator_loss(fake_output)
-        disc_loss = disc.discriminator_loss(real_output, fake_output)
+        gen_loss = generator_loss(fake_output)
+        disc_loss = discriminator_loss(real_output, fake_output)
 
     generator_grads = generator_tape.gradient(gen_loss, gen.trainable_variables)
-    discriminator_grads = discriminator_tape.gradient(disc_loss, gen.trainable_variables)
+    discriminator_grads = discriminator_tape.gradient(disc_loss, disc.trainable_variables)
 
     generator_optimizer.apply_gradients(zip(generator_grads, gen.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(discriminator_grads, disc.trainable_variables))
@@ -96,3 +95,5 @@ def generate_and_save_images(model, epoch, test_input):
 
     plt.savefig(f'''output/image_at_epoch_{epoch}.png''')
     plt.show()
+
+train(train_images, EPOCHS)

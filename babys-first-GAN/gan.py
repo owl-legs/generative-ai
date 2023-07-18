@@ -53,9 +53,12 @@ def make_generator():
 
     return model
 
+
 print('''creating generator model''')
 
 generator = make_generator()
+generator.summary()
+
 noise = tf.random.normal([1, 100])
 generated_image = generator(noise, training=False)
 
@@ -82,6 +85,8 @@ def make_discriminator():
 print('''creating discriminator''')
 
 discriminator = make_discriminator()
+discriminator.summary()
+
 decision = discriminator(generated_image)
 print(decision)
 

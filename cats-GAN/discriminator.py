@@ -12,7 +12,7 @@ class Discriminator:
     def __make_discriminator__(self):
 
         model = tf.keras.Sequential()
-        model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same', input_shape=[64, 64, 1]))
+        model.add(layers.Conv2D(64, (7, 7), strides=(2, 2), padding='same', input_shape=[64, 64, 1]))
         model.add(layers.LeakyReLU())
         model.add(layers.Dropout(0.3))
 
