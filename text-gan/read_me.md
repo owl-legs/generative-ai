@@ -1,0 +1,1 @@
+original work intended to implement a DCGAN to generate sentences

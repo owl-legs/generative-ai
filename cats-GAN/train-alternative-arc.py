@@ -19,6 +19,8 @@ train_images = parser.create_batches()
 
 disc, gen = Discriminator().discriminator, Generator().generator
 
+
+
 def def_gan(g, d):
 
     d.trainable = False
