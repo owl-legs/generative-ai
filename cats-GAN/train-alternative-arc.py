@@ -12,13 +12,27 @@ from IPython import display
 
 BATCH_SIZE = config.BATCH_SIZE
 
-print("opening and processing all the cat faces.")
+print("( ^..^)ﾉ opening and processing all the cat faces. ( ^..^)ﾉ")
 
 parser = ImageParser()
 train_images = parser.create_batches()
 
 disc, gen = Discriminator().discriminator, Generator().generator
 
+def real_samples(image_batch):
+    return image_batch, tf.ones_line(image_batch)
+
+def latent_vector(latent_dim = 100, batch_size = config.BATCH_SIZE):
+    latent_input = tf.random.normal(latent_dim * batch_size)
+    latent_input = latent_input.reshape((batch_size, latent_dim))
+    return latent_input
+
+def fake_samples(gen, latent_dim=100, batch_size=config.BATCH_SIZE):
+
+    latent_output = latent_vector(latent_dim, batch_size)
+    X = gen.predict(latent_output)
+    y = tf.zeros_like((batch_size, 1))
+    return X, y
 
 
 def def_gan(g, d):
