@@ -38,7 +38,13 @@ def train(gen, disc, dataset, latent_dim):
 
     for epoch in range(config.EPOCHS):
 
-        pass
+        for image_batch in dataset:
+
+            #first we train the discriminator:
+            y_real = tf.ones_like(image_batch)
+
+            discriminator_loss, _ = disc.train_on_batch()
+            pass
 
 
 
