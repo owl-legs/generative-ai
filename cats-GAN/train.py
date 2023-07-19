@@ -12,6 +12,8 @@ from IPython import display
 
 BATCH_SIZE = config.BATCH_SIZE
 
+print("( ^..^)ﾉ opening and processing all the cat faces. ( ^..^)ﾉ")
+
 parser = ImageParser()
 train_images = parser.create_batches()
 
@@ -37,7 +39,7 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  generator=gen,
                                  discriminator=disc)
 
-EPOCHS = 50
+EPOCHS = 100
 noise_dimmension = 100
 number_of_examples_to_generate = 16
 
@@ -97,3 +99,6 @@ def generate_and_save_images(model, epoch, test_input):
     plt.show()
 
 train(train_images, EPOCHS)
+
+disc.save('discriminator.h5')
+gen.save('generator.h5')

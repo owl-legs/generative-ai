@@ -21,17 +21,17 @@ class Generator:
         # Hidden Layer 2: Upsample to 16 x 16
         model.add(layers.Conv2DTranspose(filters=128, kernel_size=(4, 4), strides=(2, 2), padding='same',
                                          name='Generator-Hidden-Layer-2'))
-        model.add(layers.ReLU(name='Generator-Hidden-Layer-Activation-2'))
+        model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-2'))
 
         # Hidden Layer 3: Upsample to 32 x 32
         model.add(layers.Conv2DTranspose(filters=256, kernel_size=(4, 4), strides=(2, 2), padding='same',
                                          name='Generator-Hidden-Layer-3'))
-        model.add(layers.ReLU(name='Generator-Hidden-Layer-Activation-3'))
+        model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-3'))
 
         # Hidden Layer 4: Upsample to 64 x 64
         model.add(layers.Conv2DTranspose(filters=512, kernel_size=(4, 4), strides=(2, 2), padding='same',
                                          name='Generator-Hidden-Layer-4'))
-        model.add(layers.ReLU(name='Generator-Hidden-Layer-Activation-4'))
+        model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-4'))
 
         # Output Layer (Note, we use 3 filters because we have 3 channels for a color image. Grayscale would have only 1 channel)
         model.add(layers.Conv2D(filters=1, kernel_size=(5, 5), activation='tanh', padding='same',
