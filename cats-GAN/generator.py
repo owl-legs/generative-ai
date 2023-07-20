@@ -14,44 +14,53 @@ class Generator:
     def __make_generator_3__(self):
         model = tf.keras.Sequential(name="Generator")  # Model
 
-        n_nodes = 1 * 1 * 256  # number of nodes in the first hidden layer
+        n_nodes = 1 * 1 * self.latent_dim  # number of nodes in the first hidden layer
         model.add(layers.Dense(n_nodes, input_dim=self.latent_dim, name='Generator-Hidden-Layer-1'))
-        model.add(layers.Reshape((1, 1, 256), name='Generator-Hidden-Layer-Reshape-1'))
+        model.add(layers.BatchNormalization())
+        model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-2'))
+
+        model.add(layers.Reshape((1, 1, self.latent_dim), name='Generator-Hidden-Layer-Reshape-1'))
 
         #upsample to 2x2
-        model.add(layers.Conv2DTranspose(filters=2048, kernel_size=(6, 6), strides=(2, 2), padding='same',
+        model.add(layers.Conv2DTranspose(filters=512, kernel_size=(6, 6), strides=(2, 2), padding='same',
                                          use_bias= False,
                                          name='Generator-Hidden-Layer-2'))
+        model.add(layers.BatchNormalization())
         model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-2'))
 
         #upsample to 4x4
-        model.add(layers.Conv2DTranspose(filters=1024, kernel_size=(6, 6), strides=(2, 2), padding='same',
+        model.add(layers.Conv2DTranspose(filters=256, kernel_size=(6, 6), strides=(2, 2), padding='same',
                                          use_bias=False,
                                          name='Generator-Hidden-Layer-3'))
+        model.add(layers.BatchNormalization())
         model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-3'))
 
         #upsample to 8x8
-        model.add(layers.Conv2DTranspose(filters=512, kernel_size=(6, 6), strides=(2, 2), padding='same',
+        model.add(layers.Conv2DTranspose(filters=128, kernel_size=(6, 6), strides=(2, 2), padding='same',
                                          use_bias=False,
                                          name='Generator-Hidden-Layer-4'))
+        model.add(layers.BatchNormalization())
         model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-4'))
 
         #upsample to 16x16
-        model.add(layers.Conv2DTranspose(filters=256, kernel_size=(6, 6), strides=(2, 2), padding='same',
+        model.add(layers.Conv2DTranspose(filters=64, kernel_size=(6, 6), strides=(2, 2), padding='same',
                                          use_bias=False,
                                          name='Generator-Hidden-Layer-5'))
+        model.add(layers.BatchNormalization())
         model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-5'))
 
         #upsample to 32x32
-        model.add(layers.Conv2DTranspose(filters=128, kernel_size=(6, 6), strides=(2, 2), padding='same',
+        model.add(layers.Conv2DTranspose(filters=32, kernel_size=(6, 6), strides=(2, 2), padding='same',
                                          use_bias=False,
                                          name='Generator-Hidden-Layer-6'))
+        model.add(layers.BatchNormalization())
         model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-6'))
 
         #upsample to 64x64
-        model.add(layers.Conv2DTranspose(filters=64, kernel_size=(6, 6), strides=(2, 2), padding='same',
+        model.add(layers.Conv2DTranspose(filters=16, kernel_size=(6, 6), strides=(2, 2), padding='same',
                                          use_bias= False,
                                          name='Generator-Hidden-Layer-7'))
+        model.add(layers.BatchNormalization())
         model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-7'))
 
         #output image: 3 x 64 x 64
