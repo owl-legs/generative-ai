@@ -4,6 +4,7 @@ import config
 import pickle
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import numpy as np
 
 from image_parser import ImageParser
 from discriminator import Discriminator
@@ -16,7 +17,7 @@ BATCH_SIZE = config.BATCH_SIZE
 print("( ^..^)ﾉ opening and processing all the cat faces. ( ^..^)ﾉ")
 
 parser = ImageParser()
-#train_images = parser.create_batches()
+train_images = parser.images #parser.create_batches()
 
 image_config = pickle.load(open('image_config', 'rb'))
 n_channels = image_config['CHANNELS']
@@ -29,7 +30,7 @@ disc = Discriminator(n_channels=n_channels).discriminator
 gen.summary()
 disc.summary()
 
-cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+cross_entropy = tf.keras.losses.BinaryCrossentropy()
 
 def discriminator_loss(real_output, fake_output):
     real_loss = cross_entropy(tf.ones_like(real_output), real_output)
@@ -49,13 +50,14 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                  generator=gen,
                                  discriminator=disc)
 
-EPOCHS = 100
+EPOCHS = 300000
 noise_dimmension = 100
 number_of_examples_to_generate = 16
 
 
 @tf.function
 def train_step(images):
+
     noise = tf.random.normal([64, noise_dimmension])
 
     with tf.GradientTape() as generator_tape, tf.GradientTape() as discriminator_tape:
@@ -124,7 +126,7 @@ def generate_and_save_images(model, epoch, test_input):
 
     for i in range(predictions.shape[0]):
         plt.subplot(4, 4, i + 1)
-        plt.imshow(predictions[i, :, :, :] * 127.5 + 127.5)
+        plt.imshow(predictions[i, :, :, :])
         plt.axis('off')
 
     plt.savefig(f'''output/image_at_epoch_{epoch}.png''')

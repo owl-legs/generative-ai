@@ -17,7 +17,7 @@ class Generator:
         n_nodes = 1 * 1 * self.latent_dim  # number of nodes in the first hidden layer
         model.add(layers.Dense(n_nodes, input_dim=self.latent_dim, name='Generator-Hidden-Layer-1'))
         model.add(layers.BatchNormalization())
-        model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-2'))
+        model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-1'))
 
         model.add(layers.Reshape((1, 1, self.latent_dim), name='Generator-Hidden-Layer-Reshape-1'))
 
@@ -58,14 +58,14 @@ class Generator:
 
         #upsample to 64x64
         model.add(layers.Conv2DTranspose(filters=16, kernel_size=(6, 6), strides=(2, 2), padding='same',
-                                         use_bias= False,
+                                         use_bias=False,
                                          name='Generator-Hidden-Layer-7'))
         model.add(layers.BatchNormalization())
         model.add(layers.LeakyReLU(name='Generator-Hidden-Layer-Activation-7'))
 
         #output image: 3 x 64 x 64
         model.add(layers.Conv2D(filters=self.n_channels, kernel_size=(6, 6),
-                                activation='tanh',
+                                activation='sigmoid',
                                 padding='same',
                                 use_bias=False,
                                 name='Generator-Output-Layer'))
