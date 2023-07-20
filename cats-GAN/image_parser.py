@@ -15,12 +15,12 @@ class ImageParser:
       print(f'''loading {filename}''')
       img = tf.io.read_file(filename)
       img = tf.io.decode_image(img, channels=3)
-      img = tf.image.rgb_to_grayscale(img) #r(ih, iw, 3) => r(ih, iw, 1)
-      #img = (img - 127.5)/127.5
+      #img = tf.image.rgb_to_grayscale(img) #r(ih, iw, 3) => r(ih, iw, 1)
       print(f'''{filename} dimmenions: {img.shape}''')
       images.append(img)
     images = np.array(images).astype('float32')
     images = (images - 127.5)/127.5
+    #images = images/255.0
     return images[:config.BUFFER_SIZE]
 
   def __write_image_config__(self):

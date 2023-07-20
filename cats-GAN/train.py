@@ -1,6 +1,7 @@
 import os
 import time
 import config
+import pickle
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
@@ -15,9 +16,18 @@ BATCH_SIZE = config.BATCH_SIZE
 print("( ^..^)ﾉ opening and processing all the cat faces. ( ^..^)ﾉ")
 
 parser = ImageParser()
-train_images = parser.create_batches()
+#train_images = parser.create_batches()
 
-disc, gen = Discriminator().discriminator, Generator().generator
+image_config = pickle.load(open('image_config', 'rb'))
+n_channels = image_config['CHANNELS']
+
+print(n_channels)
+
+gen = Generator(n_channels=n_channels).generator
+disc = Discriminator(n_channels=n_channels).discriminator
+
+gen.summary()
+disc.summary()
 
 cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
@@ -43,7 +53,6 @@ EPOCHS = 100
 noise_dimmension = 100
 number_of_examples_to_generate = 16
 
-seed = tf.random.normal([number_of_examples_to_generate, noise_dimmension])
 
 @tf.function
 def train_step(images):
@@ -65,15 +74,30 @@ def train_step(images):
     generator_optimizer.apply_gradients(zip(generator_grads, gen.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(discriminator_grads, disc.trainable_variables))
 
+    return gen_loss, disc_loss
+
+seed = tf.random.normal([number_of_examples_to_generate, noise_dimmension])
 def train(dataset, epochs):
+    gen_losses, disc_losses = [], []
+
     for epoch in range(epochs):
         start = time.time()
+        gen_loss, disc_loss = 0, 0
 
         for image_batch in dataset:
-            train_step(image_batch)
+            gl, dl = train_step(image_batch)
+            gen_loss += gl
+            disc_loss += dl
+
+        gen_losses.append(gen_loss/256)
+        disc_losses.append(disc_loss/256)
 
         display.clear_output(wait=True)
+
         generate_and_save_images(gen, epoch + 1, seed)
+
+        print(f'''generator loss: {gen_losses[-1]}\n''')
+        print(f'''discriminator loss: {disc_losses[-1]}\n''')
 
         if (epoch + 1) % 15 == 0:
             checkpoint.save(file_prefix=checkpoint_prefix)
@@ -82,6 +106,14 @@ def train(dataset, epochs):
 
     display.clear_output(wait=True)
     generate_and_save_images(gen, epoch + 1, seed)
+
+    return (gen_losses, disc_losses)
+
+def plot_losses(gen_losses, disc_losses, epochs=EPOCHS):
+    plt.plot(range(epochs), gen_losses, label='Generator')
+    plt.plot(range(epochs), disc_losses, label='Discriminator')
+    plt.legend()
+    plt.show()
 
 
 def generate_and_save_images(model, epoch, test_input):
@@ -92,13 +124,16 @@ def generate_and_save_images(model, epoch, test_input):
 
     for i in range(predictions.shape[0]):
         plt.subplot(4, 4, i + 1)
-        plt.imshow(predictions[i, :, :, 0] * 127.5 + 127.5)
+        plt.imshow(predictions[i, :, :, :] * 127.5 + 127.5)
         plt.axis('off')
 
     plt.savefig(f'''output/image_at_epoch_{epoch}.png''')
     plt.show()
 
-train(train_images, EPOCHS)
+gen_loss, disc_loss = train(train_images, EPOCHS)
 
 disc.save('discriminator.h5')
 gen.save('generator.h5')
+
+plot_losses(gen_loss, disc_loss)
+
